@@ -1,0 +1,6 @@
+# Project Requirements
+
+# Add your dependencies here, for example:
+numpy
+scipy
+matplotlib
