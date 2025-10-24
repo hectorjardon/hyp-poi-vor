@@ -116,40 +116,8 @@ def plot_Klein_PVT(intensity,radius,tol):
     ax.set_ylim(-w, w)
     ax.set_aspect('equal','box')
     ax.axis('off')
-    ax.set_title('Poisson-Voronoi tessellation in the Klein model, intensity = {intensity}')
+    ax.set_title(f"Intensity = {intensity}")
     plt.show()
     return 
 
-# Generate Poisson point process in the Poincaré disk
-def poisson_points_euc(intensity,radius): # intensity, radius of the disk of sampling in hyperbolic metric
-    num_points = np.random.poisson(intensity * np.pi * radius**2) # number of points in the disk, Poison (intensity*area)
-    radii_coordinates = np.random.uniform(low=0, high=1, size=num_points) # sample num_points from uniform in [0,1]
-    radii = np.sqrt(radii_coordinates) * radius# sample radii by inverse transform sampling
-    angles = np.random.uniform(low=0, high=2*np.pi, size=num_points) #angles sampled form uniform in [0,2pi]
-    return np.array([radii*np.cos(angles),radii*np.sin(angles)]).T 
-#output is points in Poincare disk with shape (num_points,2), for compatibility with Delaunay
-
-
-def plot_euc_PVT(intensity,radius,tol):
-    points = poisson_points_euc(intensity,radius + np.sqrt(-np.log(1-tol) / (intensity * np.pi))) # add margin to radius to avoid edge effects, ensures that with probability tol a point will be sampled in this windo
-    tri = Delaunay(points) # Delaunay triangulation of the points
-    triangles_idx = tri.simplices # indices of the triangles
-    triangles_physical = points[triangles_idx] # shape (num_triangles,vertices,dimensions) where m is the number of triangles
-    circumcenters, circumradii = circumcenters_2d(triangles_physical) # shape (num_triangles,2), (num_triangles,)
-
-    mask = (triangles_idx[:,:,np.newaxis] == range(len(points))).any(axis=1) # mask to identify triangles containing each point
-    hulls = [ConvexHull(circumcenters[mask[:,i],:]) for i in range(len(points)) if np.sum(mask[:,i])>=3] # only keep cells with at least 3 vertices
-    patches = [Polygon(hull.points[hull.vertices],closed = True) for hull in hulls] # list of polygons for the cells
-    colors = np.random.rand(len(points),4) # random colour for each cell
-    collection = PatchCollection(patches, facecolor=colors, edgecolor='black', alpha=0.7)
-
-    # Plot
-    fig, ax = plt.subplots()
-    ax.add_collection(collection)
-    ax.set_xlim(-radius, radius)
-    ax.set_ylim(-radius, radius)
-    ax.set_aspect('equal','box')
-    ax.axis('off')
-    ax.set_title('Poisson-Voronoi tessellation in Euclidean space, intensity = {intensity}')
-    plt.show()
-    return 
+plot_Klein_PVT(0.0001,5,0.99)

@@ -54,12 +54,13 @@ def plot_PVT(intensity,radius,density,tol):
     Z = voronoi_center(mesh,points)
     plt.figure(figsize=(6,6))
     plt.pcolormesh(X, Y, Z, cmap='gist_ncar')  # 'viridis' is a nice colormap
-    plt.title('Poisson-Voronoi tessellation')
+    plt.title(f"Intensity {intensity}")
+    plt.axis('off')
     plt.gca().set_aspect('equal')  # keep axes equal
     plt.show()
     return 
 
-plot_PVT(1,5,300,0.9)
+plot_PVT(1,5,1000,0.5)
 
 
 
